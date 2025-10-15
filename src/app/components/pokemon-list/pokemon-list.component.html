@@ -1,0 +1,60 @@
+<div class="container">
+  <h1>Pokédex Simples</h1>
+  
+  <div *ngIf="loading()" class="loading">
+    <p>Carregando...</p>
+  </div>
+
+  <div *ngIf="error()" class="error">
+    <p>{{ error() }}</p>
+    <button (click)="loadPokemon()">Tentar Novamente</button>
+  </div>
+
+  <div *ngIf="!loading() && !error() && pokemon().length > 0" class="pokemon-list">
+    <div *ngFor="let pokemon of pokemon()" 
+         class="pokemon-item" 
+         [class.expanded]="isExpanded(pokemon.id)"
+         (click)="togglePokemonDetails(pokemon.id)">
+      
+      <div class="pokemon-basic">
+        <span class="pokemon-id">#{{ pokemon.id }}</span>
+        <span class="pokemon-name">{{ pokemon.name | titlecase }}</span>
+      </div>
+
+      <div *ngIf="isExpanded(pokemon.id)" class="pokemon-details">
+        <div *ngIf="getPokemonDetails(pokemon.id)" class="details-content">
+          <div class="pokemon-image">
+            <img *ngIf="getPokemonDetails(pokemon.id)?.sprites?.front_default" 
+                 [src]="getPokemonDetails(pokemon.id)?.sprites?.front_default" 
+                 [alt]="pokemon.name">
+          </div>
+          
+          <div class="pokemon-stats">
+            <div class="stat-item">
+              <span class="stat-label">Altura:</span>
+              <span class="stat-value">{{ (getPokemonDetails(pokemon.id)?.height || 0) / 10 }}m</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Peso:</span>
+              <span class="stat-value">{{ (getPokemonDetails(pokemon.id)?.weight || 0) / 10 }}kg</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Tipos:</span>
+              <div class="types">
+                <span *ngFor="let type of getPokemonDetails(pokemon.id)?.types" 
+                      class="type-badge"
+                      [class]="'type-' + type.type.name">
+                  {{ type.type.name }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="!getPokemonDetails(pokemon.id)" class="loading-details">
+          <p>Carregando detalhes...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
